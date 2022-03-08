@@ -1,0 +1,6 @@
+datasets==1.18.3
+huggingface-hub==0.4.0
+pandas==1.2.5
+scikit-learn == 1.0.2
+torch==1.10.2
+transformers==4.16.2
