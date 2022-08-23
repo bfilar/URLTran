@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
-from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
+from torch.utils.data import Dataset
 
 
 class URLTranDataset(Dataset):
@@ -24,11 +24,7 @@ class URLTranDataset(Dataset):
 
 def preprocess(url_data, tokenizer):
     inputs = tokenizer(
-        url_data,
-        return_tensors="pt",
-        max_length=128,
-        truncation=True,
-        padding=True
+        url_data, return_tensors="pt", max_length=128, truncation=True, padding=True
     )
 
     inputs["mlm_labels"] = inputs.input_ids.detach().clone()
@@ -39,16 +35,10 @@ def masking_step(inputs):
     rand = torch.rand(inputs.shape)
     # mask array that replicates BERT approach for MLM
     # ensure that [cls], [sep], [mask] remain untouched
-    mask_arr = (
-        (rand < 0.15)
-        * (inputs != 101)
-        * (inputs != 102)
-        * (inputs != 0)
-    )
+    mask_arr = (rand < 0.15) * (inputs != 101) * (inputs != 102) * (inputs != 0)
 
     selection = [
-        torch.flatten(mask_arr[i].nonzero()).tolist()
-        for i in range(inputs.shape[0])
+        torch.flatten(mask_arr[i].nonzero()).tolist() for i in range(inputs.shape[0])
     ]
 
     for i in range(inputs.shape[0]):
@@ -61,9 +51,11 @@ def split_data(dataset_path):
     df_final = pd.read_csv(dataset_path)
     X = df_final.url
     y = df_final.label.astype(int)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.33, random_state=42
+    )
 
-    cnames = ['url', 'label']
+    cnames = ["url", "label"]
     train_df = pd.DataFrame(zip(X_train.values, y_train.values), columns=cnames)
     test_df = pd.DataFrame(zip(X_test.values, y_test.values), columns=cnames)
     return train_df, test_df

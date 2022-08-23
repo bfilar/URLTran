@@ -1,14 +1,14 @@
 import torch
-from torch.utils.data import DataLoader
-from transformers import BertTokenizer, AutoConfig, AutoModelForSequenceClassification
 from sklearn.metrics import accuracy_score, f1_score
+from torch.utils.data import DataLoader
+from transformers import AutoConfig, AutoModelForSequenceClassification, BertTokenizer
 
 import data_prep
 
 model_ckpt = "URLTran-BERT"
 config = AutoConfig.from_pretrained(model_ckpt)
 config.num_labels = 2
-config.problem_type = 'single_label_classification'
+config.problem_type = "single_label_classification"
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 model = AutoModelForSequenceClassification.from_pretrained(model_ckpt, config=config)

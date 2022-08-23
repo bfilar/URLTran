@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from transformers import BertTokenizer, BertForMaskedLM
+from transformers import BertForMaskedLM, BertTokenizer
 
 import data_prep
 
@@ -31,11 +31,7 @@ def train(dataset, model):
             attention_mask = batch["attention_mask"].to(device)
             labels = batch["mlm_labels"].to(device)
 
-            outputs = model(
-                masked_inputs,
-                attention_mask=attention_mask,
-                labels=labels
-            )
+            outputs = model(masked_inputs, attention_mask=attention_mask, labels=labels)
 
             loss = outputs.loss
             loss.backward()
@@ -52,7 +48,8 @@ def predict_mask(url, tokenizer, model):
         predictions = model(masked_inputs)
 
     output_ids = torch.argmax(
-        torch.nn.functional.softmax(predictions.logits[0], -1), dim=1).tolist()
+        torch.nn.functional.softmax(predictions.logits[0], -1), dim=1
+    ).tolist()
 
     return masked_inputs, output_ids
 
@@ -65,8 +62,8 @@ if __name__ == "__main__":
     # Example Inference
     url = "huggingface.co/docs/transformers/task_summary"
     input_ids, output_ids = predict_mask(url, tokenizer, model)
-    masked_input = tokenizer.decode(input_ids[0].tolist()).replace(' ', '')
-    prediction = tokenizer.decode(output_ids).replace(' ', '')
+    masked_input = tokenizer.decode(input_ids[0].tolist()).replace(" ", "")
+    prediction = tokenizer.decode(output_ids).replace(" ", "")
 
     print(f"Masked Input: {masked_input}")
     print(f"Predicted Output: {prediction}")
